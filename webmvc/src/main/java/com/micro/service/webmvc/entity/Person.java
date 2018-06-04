@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class Person {
 
-    @NotNull
+    @NotNull(message = "person.name.notnull")
     private String name;
 
     private int age;

@@ -2,10 +2,12 @@ package com.micro.service.webmvc.controller;
 
 import com.micro.service.webmvc.entity.Person;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  * 写点注释吧!!
@@ -30,5 +32,14 @@ public class PersonController {
                 produces = "application/properties+person" )
     public Person personJsonToProperties(@RequestBody Person person){
             return person;
+    }
+    @GetMapping("/addPerson")
+    public Person addPerson(@Valid Person person , BindingResult bindingResult){
+        boolean hasErrors = bindingResult.hasErrors();
+        if(hasErrors){
+            List<ObjectError> allErrors = bindingResult.getAllErrors();
+            System.out.println(allErrors.get(0).getDefaultMessage());
+        }
+        return person;
     }
 }
