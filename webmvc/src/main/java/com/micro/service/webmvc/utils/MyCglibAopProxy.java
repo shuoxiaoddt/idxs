@@ -26,20 +26,18 @@ import java.util.Objects;
 @Component
 public class MyCglibAopProxy implements MethodInterceptor {
 
-    @Autowired
     private DataSource dataSource;
 
     public Enhancer enhancer = new Enhancer();
 
-
-
     public MyCglibAopProxy(){
 
     }
-    public Object  getInstance(Class cls){
+    public Object  getInstance(Class cls,DataSource dataSource){
         enhancer.setSuperclass(cls);
         enhancer.setCallbacks(new Callback[]{this, NoOp.INSTANCE});
         enhancer.setCallbackFilter(new TransactionalFilter());
+        this.dataSource = dataSource;
         return enhancer.create();
     }
 
@@ -54,14 +52,16 @@ public class MyCglibAopProxy implements MethodInterceptor {
             DataSourceTransactionManager platformTransactionManager = new DataSourceTransactionManager();
             platformTransactionManager.setDataSource(dataSource);
             TransactionStatus transaction = platformTransactionManager.getTransaction(new DefaultTransactionDefinition());
-            Object savepoint =  transaction.createSavepoint();
+            //Object savepoint =  transaction.createSavepoint();
             try{
                 result = methodProxy.invokeSuper(o, objects);
             }catch (Exception e){
                 e.printStackTrace();
-                transaction.rollbackToSavepoint(savepoint);
+               //transaction.rollbackToSavepoint(savepoint);
             }finally {
+
             }
+            //transaction.releaseSavepoint(savepoint);
         }else{
             result = methodProxy.invokeSuper(o, objects);
         }

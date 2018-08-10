@@ -5,8 +5,10 @@ import com.micro.service.webmvc.entity.Person;
 import com.micro.service.webmvc.service.SpringTransactional;
 import com.micro.service.webmvc.utils.MyCglibAopProxy;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.util.StopWatch;
@@ -26,8 +28,8 @@ import java.util.concurrent.Future;
  * @author xiaos
  * @date : 2018/5/9
  */
-//@RestController
-//@RequestMapping("person")
+@RestController
+@RequestMapping("person")
 @Slf4j
 public class PersonController {
 
@@ -38,7 +40,8 @@ public class PersonController {
     private AsyncUtil asyncUtil;
     @PostMapping(value = "save")
     public Person savae(){
-        springTransactional.query();
+       // System.out.println(addresses);
+        //springTransactional.query();
         return new Person();
     }
 
@@ -103,12 +106,11 @@ public class PersonController {
         applicationContext.scan("com.micro.service.webmvc");
         applicationContext.refresh();
         MyCglibAopProxy cglibAopProxy = applicationContext.getBean("myCglibAopProxy",MyCglibAopProxy.class);
+        DataSource dataSource = applicationContext.getBean("dataSource",DataSource.class);
+        JdbcTemplate jdbcTemplate = applicationContext.getBean("jdbcTemplate",JdbcTemplate.class);
         SpringTransactional springTransactional =
-                (SpringTransactional)cglibAopProxy.getInstance(SpringTransactional.class);
-        SpringTransactional container = applicationContext.getBean("springTransactional",SpringTransactional.class);
-        container.add();
-        springTransactional.add();
-
+                (SpringTransactional)cglibAopProxy.getInstance(SpringTransactional.class,dataSource);
+        springTransactional.add(jdbcTemplate);
     }
 
 }

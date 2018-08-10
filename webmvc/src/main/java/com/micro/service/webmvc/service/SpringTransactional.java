@@ -16,7 +16,6 @@ import javax.annotation.Resource;
 @Service
 public class SpringTransactional implements ApplicationContextAware {
 
-    private JdbcTemplate jdbcTemplate;
 
     private ApplicationContext applicationContext;
 
@@ -28,11 +27,9 @@ public class SpringTransactional implements ApplicationContextAware {
 //        System.err.println(this.hashCode());
 //        System.err.println(springTransactional.hashCode());
 //        springTransactional.add();
-        add();
     }
     @TransactionalXS
-    public void add(){
-        jdbcTemplate = applicationContext.getBean("jdbcTemplate",JdbcTemplate.class);
+    public void add(JdbcTemplate jdbcTemplate){
         String sql = "insert into t1(tid,t1str) values (1,'xs')";
         jdbcTemplate.execute(sql);
     }
